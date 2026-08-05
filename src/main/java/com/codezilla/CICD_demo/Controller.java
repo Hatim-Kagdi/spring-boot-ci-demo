@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 public class Controller {
     @GetMapping("/demo")
     public String sayHello(){
-        return "Pipeline is working!";
+        return "New Message";
     }
 
     @GetMapping("/new")
