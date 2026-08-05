@@ -36,7 +36,7 @@ jobs:
 
     # 5. Build the Docker Image
     - name: Build Docker image
-      run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-ci-demo:latest .
+      run: docker build --no-cache -t ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-ci-demo:latest .
 
     # 6. Push Image to Docker Hub
     - name: Push image to Docker hub
