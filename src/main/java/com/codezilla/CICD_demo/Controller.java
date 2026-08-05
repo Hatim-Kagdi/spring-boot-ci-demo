@@ -8,4 +8,9 @@ public class Controller {
     public String sayHello(){
         return "Pipeline is working!";
     }
+
+    @GetMapping("/new")
+    public String working(){
+        return "Page 2 Pipeline";
+    }
 }
