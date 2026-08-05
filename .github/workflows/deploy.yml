@@ -1,0 +1,56 @@
+name: docker build push and deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Checkout code from repository
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    # 2. Set up Java JDK 21 (Temurin distribution)
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+        cache: 'maven'
+
+    # 3. Build the JAR file using Maven wrapper (with permission grant)
+    - name: Build jar
+      run: |
+        chmod +x ./mvnw
+        ./mvnw clean package -DskipTests
+
+    # 4. Log in to Docker Hub using pre-built GitHub action
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+    # 5. Build the Docker Image
+    - name: Build Docker image
+      run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-ci-demo:latest .
+
+    # 6. Push Image to Docker Hub
+    - name: Push image to Docker hub
+      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-ci-demo:latest
+
+    # 7. SSH into EC2 and deploy the application container
+    - name: SSH and deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          docker stop spring-demo || true
+          docker rm spring-demo || true
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-ci-demo:latest
+          docker run -d --name spring-demo -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-ci-demo:latest
