@@ -4,9 +4,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class Controller {
-    @GetMapping("/demo")
+    @GetMapping("/")
     public String sayHello(){
-        return "Have to kaam kar";
+        return "Pipeline working!";
     }
 
     @GetMapping("/new")
