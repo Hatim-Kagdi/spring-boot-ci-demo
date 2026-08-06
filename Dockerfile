@@ -1,5 +1,5 @@
 # Stage 1: Build the application using Maven
-FROM eclipse-temurin:21-jdk-jammy AS build
+FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
 COPY target/*.jar app.jar

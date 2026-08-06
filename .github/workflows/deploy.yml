@@ -42,7 +42,7 @@ jobs:
     - name: Push image to Docker hub
       run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-ci-demo:latest
 
-    # 7. SSH into EC2 and deploy the application container
+      # 7. SSH into EC2 and update/restart the stack via Docker Compose
     - name: SSH and deploy to EC2
       uses: appleboy/ssh-action@master
       with:
@@ -50,7 +50,7 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          docker stop spring-demo || true
-          docker rm spring-demo || true
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-ci-demo:latest
-          docker run -d --name spring-demo -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-ci-demo:latest
+          cd ~/app
+          docker compose pull
+          docker compose up -d --remove-orphans
+          docker system prune -f

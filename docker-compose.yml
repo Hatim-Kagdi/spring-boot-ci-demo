@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    ports:
+      - "3306:3306"
+    networks:
+      - app-net
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${DB_PASSWORD}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  demo-app:
+    build: .   # Tells Docker Compose to look for a Dockerfile in the current directory and build it
+    image: ${DOCKER_HUB_USERNAME}/spring-db-ci-demo:latest   # The tag name to give the built image locally
+    container_name: demo-container
+    ports:
+      - "8080:8080"
+    environment:
+      - DOCKER_URL=${DOCKER_HUB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge
