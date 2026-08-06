@@ -36,11 +36,11 @@ jobs:
 
     # 5. Build the Docker Image
     - name: Build Docker image
-      run: docker build --no-cache -t ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-ci-demo:latest .
+      run: docker build --no-cache -t ${{ secrets.DOCKER_HUB_USERNAME }}/spring-db-ci-demo:latest .
 
     # 6. Push Image to Docker Hub
     - name: Push image to Docker hub
-      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-ci-demo:latest
+      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/spring-db-ci-demo:latest
 
       # 7. SSH into EC2 and update/restart the stack via Docker Compose
     - name: Deploy to EC2 via SSH
