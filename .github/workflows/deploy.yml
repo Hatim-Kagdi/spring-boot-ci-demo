@@ -52,15 +52,4 @@ jobs:
         script: |
           cd ~/app
           docker system prune -a --volumes -f
-          
-          # Pull and start MySQL first, allowing it to settle
-          docker compose pull mysql-db
-          docker compose up -d mysql-db
-          
-          # Then pull and start your Spring Boot app
-          docker compose pull demo-app
-          docker compose up -d demo-app
-          
-          # Pull and restart
-          docker compose pull
-          docker compose up -d --remove-orphans
+          docker compose up -d 
